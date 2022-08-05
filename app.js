@@ -13,11 +13,11 @@ const YAML = require('yamljs');
 const swaggerDocument = YAML.load('./swagger.yaml');
 
 // EXPRESS
-const express = require('express');                                             // Makes express available.
-const app = express();                                                          // Assigns the express functionality specifically to the 'app' constant.
+const express = require('express');                                             // Makes the express package available for use in this file.
+const app = express();                                                          // Assigns the express function specifically to the 'app' constant.
 
 const connectDB = require('./db/connect');                                      // Makes the database info in db/connect available.
-const authenticateReader = require('./middleware/authentication');                // Makes the authentication middleware available.
+const authenticateReader = require('./middleware/authentication');              // Makes the authentication middleware available.
 
 // ROUTERS
 const authRouter = require('./routes/auth');                                    // Makes the functions and post method in routes/auth.js available for use below.
@@ -59,7 +59,7 @@ const port = process.env.PORT || 5000;
 
 const start = async () => {
   try {
-    await connectDB(process.env.MONGO_URI);                                     //// Establishes a connection to the database based on the info in the .env file.
+    await connectDB(process.env.MONGO_URI);                                     //// Starts the server by connecting to the database based on the info in the .env file.
     app.listen(port, () =>
       console.log(`Server is listening on port ${port}...`)
     );

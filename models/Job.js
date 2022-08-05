@@ -18,8 +18,8 @@ const JobSchema = new mongoose.Schema(
       default: 'pending',                                                       // Sets the default value.
     },
     createdBy: {                                                                // This ties the job model to the user model. Whenever a job is created, 
-      type: mongoose.Types.ObjectId,                                            //// it associates it with a reader. 
-      ref: 'Reader',                                                            //// This is the other model it will use as a reference.
+      type: mongoose.Schema.Types.ObjectId,                                            //// it associates it with a reader. 
+      ref: 'Reader',                                                            //// This is the other model it will use as a reference. From the auth middleware?
       required: [true, 'Please provide reader. '],
     },
   },

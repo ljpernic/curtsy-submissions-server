@@ -1,18 +1,28 @@
-const Reader = require('../models/Reader')                                              // Makes the schema and functions defined in /models/Reader available in const Reader.
+const Reader = require('../models/Reader.js')                                           // Makes the schema and functions defined in /models/Reader available in const Reader.
 const { StatusCodes } = require('http-status-codes')                                    // Makes easy status codes from http-status-code package available.
 const { BadRequestError, UnauthenticatedError } = require('../errors')                  // Makes these extra errors available.
+const jwt = require('jsonwebtoken')                                                     // Makes jwt package available for creating json web tokens. 
+
 
 // REGISTRATION FUNCTION  -- SHOULD ONLY BE AVAILABLE TO TOP LEVEL EDITOR // 
 const addReader = async (req, res) => {                                                 // Creates asynchronous function called "addReader" which 
-  const reader = await Reader.create({ ...req.body })                                   //// creates a 'reader' constant with all of the data passed in from req.body and
-  const token = reader.createJWT()                                                      //// creates a unique JWT token based on that reader data and
+  const reader = await Reader.create({ ...req.body })                                   //// creates a 'reader' with Reader data passed in from req.body, then
+  const token = jwt.sign(                                                               //// This function is for creating web tokens by 
+    { 
+      readerId: reader._id, 
+      name: reader.name 
+    },                                                                                  //// using reader.something to refer to the id and keypair values in the given document,
+      process.env.JWT_SECRET,                                                           //// mixing those values with the token key given in the hidden .env file.
+    {
+      expiresIn: process.env.JWT_LIFETIME,                                              //// It also provides an expiration period based on what's in the .env file. 
+    }
+  )                                                                                     //// creates a unique JWT token based on that reader data and
   res.status(StatusCodes.CREATED).json({ reader: { name: reader.name }, token })        //// responds with a statuscode based on reader/token data, the reader name and the token.
 } 
 
 // LOGIN FUNCTION -- SHOULD BE AVAILABLE TO ALL EDITORS AND READERS //
 const login = async (req, res) => {                                                     // Function that creates 'email' and 'password' constants with the data
   const { email, password } = req.body                                                  //// passed in from req.body.
-
   if (!email || !password) {                                                            // If there's no email or password, 
     throw new BadRequestError('Please provide an email and password! ')                 //// it throws an error. 
   }
@@ -24,8 +34,19 @@ const login = async (req, res) => {                                             
   if (!isPasswordCorrect) {                                                             //// If the password is not correct, 
     throw new UnauthenticatedError('Invalid password. ')                                //// it throws an error.
   }
-  const token = reader.createJWT()                                                      // Otherwise, it creates a token for this login based on 
-  res.status(StatusCodes.OK).json({ reader: { name: reader.name }, token })             //// the valid reader data.
+  const token = jwt.sign(                                                               //// This function is for creating web tokens by 
+    { 
+      readerId: reader._id, 
+      name: reader.name 
+    },                                                                                  //// using reader.something to refer to the id and keypair values in the given document,
+      process.env.JWT_SECRET,                                                           //// mixing those values with the token key given in the hidden .env file.
+    {
+      expiresIn: process.env.JWT_LIFETIME,                                              //// It also provides an expiration period based on what's in the .env file. 
+    }
+  )                                                                                    //// creates a unique JWT token based on that reader data and
+    console.log(`auth token: ` + token)
+  res.status(StatusCodes.OK).json({ reader: { name: reader.name }, token })
+                //// responds with a statuscode based on reader/token data, the reader name and the token.
 }
 
 module.exports = {                                                                      // Exports the registration and login functions so that they are 

@@ -1,8 +1,8 @@
-//////// These will be our readers! ////////
+//////// READER MODEL ////////
 
 const mongoose = require('mongoose')                                            // Makes the mongoose package available to handle schema creation.
 const bcrypt = require('bcryptjs')                                              // Makes the bcrypt package available for hashing and comparing passwords.
-const jwt = require('jsonwebtoken')                                             // Makes jwt package available for creating json web tokens. 
+// const jwt = require('jsonwebtoken')                                             // Makes jwt package available for creating json web tokens. 
 
 const ReaderSchema = new mongoose.Schema({                                      // This schema is used to add new readers. This should be internal though!
   name: {
@@ -28,6 +28,11 @@ const ReaderSchema = new mongoose.Schema({                                      
       'Passwords must be at least eight characters in length. '
     ]
   },
+  roles: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Role"
+  }],
 })
 
 // FUNCTION TO HASH PASSWORDS //
@@ -36,16 +41,17 @@ ReaderSchema.pre('save', async function () {                                    
   this.password = await bcrypt.hash(this.password, salt)
 })
 
-// FUNCTION TO CREATE TOKEN BASED ON DOCUMENT DATA //
-ReaderSchema.methods.createJWT = function () {                                  // Creates function called createJWT using the methods instance using schemaName.methods.functionName. 
-  jwt.sign(                                                                     //// This function is for creating web tokens by 
-    { readerId: this._id, name: this.name },                                    //// using this.something to refer to the id and keypair values in the given document,
-    process.env.JWT_SECRET,                                                     //// mixing those values with the token key given in the hidden .env file.
-    {
-      expiresIn: process.env.JWT_LIFETIME,                                      //// It also provides an expiration period based on what's in the .env file. 
-    }
-  )
-}
+// DOESN'T WORK -- MOVED FUNCTIONS TO WHERE THEY WERE BEING CALLED //
+// // FUNCTION TO CREATE TOKEN BASED ON DOCUMENT DATA //
+// ReaderSchema.methods.createJWT = function () {                                  // Creates function called createJWT using the methods instance using schemaName.methods.functionName. 
+//   jwt.sign(                                                                     //// This function is for creating web tokens by 
+//     { readerId: this._id, name: this.name },                                    //// using this.something to refer to the id and keypair values in the given document,
+//     process.env.JWT_SECRET,                                                     //// mixing those values with the token key given in the hidden .env file.
+//     {
+//       expiresIn: process.env.JWT_LIFETIME,                                      //// It also provides an expiration period based on what's in the .env file. 
+//     }
+//   )
+// }
 
 // COMPARES PASSWORDS BETWEEN SUBMITTED DATA AND DOCUMENT IN THE DB //
 ReaderSchema.methods.comparePassword = async function (canditatePassword) {     // Creates function called comparePassword with the methods instance using schemaName.methods.functionName.

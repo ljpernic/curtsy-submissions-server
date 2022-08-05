@@ -27,6 +27,7 @@ const getJob = async (req, res) => {                                            
 
 // FUNCTION TO CREATE NEW JOB //
 const createJob = async (req, res) => {                                               // Function to create new job.
+//  console.log(req.reader)
   req.body.createdBy = req.reader.readerId                                            //// First, it sets the readerId as the createdBy value in the req when the job is created.
   const job = await Job.create(req.body)                                              //// Then it sets as const job all of the values in req.body (the schema properties!), 
   res.status(StatusCodes.CREATED).json({ job })                                       //// which it then returns.
