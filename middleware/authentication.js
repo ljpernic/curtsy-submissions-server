@@ -15,10 +15,14 @@ const auth = async (req, res, next) => {
                                                                       //// It does this by creating an array using authHeader.split and getting the second ([1]) value.
   try {                                                               //// Then it creates the payload that will include the token processed with the hash key in the .env file 
     const payload = jwt.verify(token, process.env.JWT_SECRET)         //// using the jwt.verify method.
-//    console.log(payload)                                            // This shows the deconstruction token, with readerId, name, iat timestamp, and exp timestamp. 
+//    console.log(`Authentication middleware payload: ` + JSON.stringify(payload))      // This shows the deconstruction token, with readerId, name, iat timestamp, and exp timestamp. 
 
-// ATTACHES THE READER TO THE JOBS ROUTE // 
-    req.reader = { readerId: payload.readerId, name: payload.name }   // Sets the readerId and token as values from the payload value into the req.reader value.
+// MAKES THIS DATA AVAILABLE FOR THE JOBS ROUTE/CONTROLLER //
+    req.reader = { 
+      readerId: payload.readerId, 
+      name: payload.name
+    }                                                                 // Sets the readerId and token as values from the payload value into the req.reader value.
+//    console.log(`req.reader in middleware/authentication: ` + JSON.stringify(req.reader))
     next()                                                            //// Essentially, this is just getting the payload and passing in the matching readerId based on 
   } catch (error) {                                                   //// the schema provided by models/Readers.js. 
     throw new UnauthenticatedError('Authentication invalid. ')        //// And if it isn't the right payload, it throws an error.

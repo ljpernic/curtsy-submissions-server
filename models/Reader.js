@@ -28,11 +28,11 @@ const ReaderSchema = new mongoose.Schema({                                      
       'Passwords must be at least eight characters in length. '
     ]
   },
-  roles: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Role"
-  }],
+  role: {
+    type: String,
+    enum: ['subEditor', 'middleEditor', 'chiefEditor'],                           // Sets an array with possible values.
+    default: 'subEditor',                                                       // Sets the default value.
+  },
 })
 
 // FUNCTION TO HASH PASSWORDS //
