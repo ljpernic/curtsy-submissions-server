@@ -2,6 +2,7 @@ const Reader = require('../models/Reader')                            // Makes t
 const jwt = require('jsonwebtoken')                                   // Makes json web token functionality available.
 const { UnauthenticatedError } = require('../errors')                 // Makes the unauthenticated error available.
 
+//////// THIS FUNCTION VERIFIES THE TOKEN IN THE BROWSER //////// 
 const auth = async (req, res, next) => {
   
   // CHECKS HEADER FOR TOKEN //
@@ -20,7 +21,8 @@ const auth = async (req, res, next) => {
 // MAKES THIS DATA AVAILABLE FOR THE JOBS ROUTE/CONTROLLER //
     req.reader = { 
       readerId: payload.readerId, 
-      name: payload.name
+      name: payload.name,
+      role: payload.role
     }                                                                 // Sets the readerId and token as values from the payload value into the req.reader value.
 //    console.log(`req.reader in middleware/authentication: ` + JSON.stringify(req.reader))
     next()                                                            //// Essentially, this is just getting the payload and passing in the matching readerId based on 
@@ -32,3 +34,12 @@ const auth = async (req, res, next) => {
 module.exports = auth
 
 ////// Note: the payload reader can also be found using .select. Look at the tutorials for how. //////
+
+// What's supposed to happen? After you log in, it loads a specific dashboard based on your role. 
+// Jobs does this already--it loads specific jobs based on readerId.
+// Let's just copy that functionality?
+
+// Maybe a "getDashboard" function that mirrors getJobs?
+
+// and an api that uses the middleware/authenticate in the app.js to make the role available.
+// Then the frontend can look for role instead of reader. 

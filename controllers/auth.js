@@ -5,7 +5,18 @@ const jwt = require('jsonwebtoken')                                             
 
 // REGISTRATION FUNCTION  -- SHOULD ONLY BE AVAILABLE TO TOP LEVEL EDITOR // 
 const addReader = async (req, res) => {                                                 // Creates asynchronous function called "addReader" which 
+  console.log(req.body)
   const reader = await Reader.create({ ...req.body })                                   //// creates a 'reader' with Reader data passed in from req.body, then
+
+// First checks to see if the reader already exists.
+  const newEmail = reader.email
+  const readerExists = await Reader.findOne({ newEmail })
+  console.log(`readerExists? ` + readerExists)
+  if (readerExists) {                                                                   //// And if there isn't one, it throws an error saying the reader wasn't found.
+    throw new UnauthenticatedError('A reader already exists with those credentials. ')
+  }
+
+// And if not, creates the token.
   const token = jwt.sign(                                                               //// This function is for creating web tokens by 
     { 
       readerId: reader._id, 
@@ -45,12 +56,41 @@ const login = async (req, res) => {                                             
     {
       expiresIn: process.env.JWT_LIFETIME,                                              //// It also provides an expiration period based on what's in the .env file. 
     }
-  )                                                                                    //// creates a unique JWT token based on that reader data and
-  res.status(StatusCodes.OK).json({ reader: { name: reader.name, role: reader.role }, token })
-                //// responds with a statuscode based on reader/token data, the reader name and the token.
-}                                                                                           // THIS IS WHERE THE TOKEN CONFIRMATION GOES INSTEAD OF THE READER MODEL?
+  )
+                                                                                      //// creates a unique JWT token based on that reader data and
+  res.status(StatusCodes.OK).json({ reader: { name: reader.name }, token })            //// responds with a statuscode based on reader/token data, the reader name and the token.
+}                                                                                      
+
+// const isChiefEditor = async (req, res, next) => {
+//   const chiefEditor = await Reader.findById(req.readerId).exec((err, Reader) => {
+//     if (err) {
+//       res.status(500).send({ message: err });
+//       return;
+//     }
+//     if (chiefEditor.role === "chiefEditor") {
+//       next();
+//       return;
+//     }
+//   });
+// };
+
+// const isAssistantEditor = async (req, res, next) => {
+//   const assistantEditor = await Reader.findById(req.readerId).exec((err, reader) => {
+//     if (err) {
+//       res.status(500).send({ message: err });
+//       return;
+//     }
+//     if (assistantEditor.role === "assistantEditor") {
+//       next();
+//       return;
+//     }
+//   });
+// };
+
 
 module.exports = {                                                                      // Exports the registration and login functions so that they are 
   addReader,                                                                            //// available everywhere.
   login,
+  // isChiefEditor,
+  // isAssistantEditor
 }

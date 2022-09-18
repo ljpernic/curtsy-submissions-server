@@ -5,6 +5,7 @@ const { BadRequestError, NotFoundError } = require('../errors')
 // FUNCTION TO GET ALL JOBS FOR A PARTICULAR READER //
 const getAllJobs = async (req, res) => {                                              // Function to get all jobs,
   const jobs = await Job.find({ createdBy: req.reader.readerId }).sort('createdAt')   //// sorted by readerId of the person currently signed in and the time of creation.
+//  console.log(req.reader)
   res.status(StatusCodes.OK).json({ jobs, count: jobs.length })                       //// Then it returns the jobs and the number of jobs. We need the length on the front end.
 }
 

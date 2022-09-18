@@ -29,9 +29,9 @@ const ReaderSchema = new mongoose.Schema({                                      
     ]
   },
   role: {
-    type: String,
-    enum: ['subEditor', 'middleEditor', 'chiefEditor'],                           // Sets an array with possible values.
-    default: 'subEditor',                                                       // Sets the default value.
+    type: mongoose.Schema.Types.ObjectId,                                            //// it associates it with a reader. 
+    ref: 'Role',                                                            //// This is the other model it will use as a reference. From the auth middleware?
+    required: [true, 'Please provide role. '],
   },
 })
 
